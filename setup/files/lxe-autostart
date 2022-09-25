@@ -1,0 +1,10 @@
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+
+# @xscreensaver -no-splash
+@xset s off
+@xset -dpms
+@xset s noblank
+
+# load our pi game app after the desktop boots
+@bash /home/pi/love-frame/start.sh
