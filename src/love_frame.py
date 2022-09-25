@@ -8,8 +8,8 @@ from gallery import Gallery
 
 
 pygame.init()
-pygame.display.set_caption("debug/test-pygame-live-video")
-screen = pygame.display.set_mode([1280, 720])
+pygame.display.set_caption("Join the love frame")
+screen = pygame.display.set_mode([1024, 600], pygame.NOFRAME)
 
 currentComponent = Gallery(screen)
 

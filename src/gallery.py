@@ -44,16 +44,13 @@ class Gallery(object):
             file_path = f"{PICTURES_PATH}/{file}"
             cv_image = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
-            # it might take a couple hundred ms to compute the
-            # dominant color,  allow the render method to display
-            # the image in the mean time
-            self.dominant_color = [0, 0, 0]
             pyg_image = img.opencv_to_pyg(cv_image)
             pyg_image = img.scale_pygimage_to_screen(self.screen, pyg_image)
             img_coords = img.center_pygimage_on_screen(self.screen, pyg_image)
+
+            self.dominant_color = img.get_dominant_color(cv_image)
             self.image = pyg_image
             self.image_coords = img_coords
-            self.dominant_color = img.get_dominant_color(cv_image)
 
             time.sleep(DISPLAY_SECONDS)
 
