@@ -6,8 +6,11 @@ import threading
 import cv2
 import numpy as np
 import pygame
+from pygame.locals import MOUSEBUTTONDOWN
+
 
 import lib.image_utils as img
+from components.fader import Fader
 
 PICTURES_PATH = "./data/gallery"
 DISPLAY_SECONDS = 7
@@ -15,11 +18,16 @@ DISPLAY_SECONDS = 7
 
 class Gallery(object):
 
-    def __init__(self, screen):
+    def __init__(self, screen, on_closing=None):
         self.screen = screen
+        self.on_closing = on_closing
+
+        self.has_closed = False
         self.image = None
         self.image_coords = (0, 0)
         self.dominant_color = [0, 0, 0]
+
+        self.fader = Fader(screen, on_close=self.handle_fader_close)
 
         self.next_image_thread_running = True
         self.next_image_thread = threading.Thread(
@@ -28,13 +36,31 @@ class Gallery(object):
 
     def __del__(self):
         self._kill_next_image_thread()
-        # don't let self to destruct until next image thread has exited
+
+    def handle_fader_close(self):
+        self.has_closed = True
         self.next_image_thread.join()
 
+    def handle_pyg_event(self, event):
+        if event.type == MOUSEBUTTONDOWN:
+            self._kill_next_image_thread()
+            self.on_closing and self.on_closing()
+            self.fader.close()
+
+            return True  # stop propagation
+
+        return False
+
     def render(self):
+        if self.has_closed:
+            return False
+
         if self.image != None:
-            self.screen.fill(self.dominant_color)
-            self.screen.blit(self.image, self.image_coords)
+            self.fader.surface.fill(self.dominant_color)
+            self.fader.surface.blit(self.image, self.image_coords)
+            self.fader.render()
+
+        return True
 
     def _set_next_image_thread(self):
         while self.next_image_thread_running:
@@ -48,6 +74,8 @@ class Gallery(object):
             pyg_image = img.scale_pygimage_to_screen(self.screen, pyg_image)
             img_coords = img.center_pygimage_on_screen(self.screen, pyg_image)
 
+            # it takes a few hundred ms to compute the dominant color on
+            # raspberry pi, so do that before setting the image
             self.dominant_color = img.get_dominant_color(cv_image)
             self.image = pyg_image
             self.image_coords = img_coords
