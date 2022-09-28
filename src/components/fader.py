@@ -22,19 +22,30 @@ class Fader(object):
 
     """
 
-    def __init__(self, screen, on_close=None):
+    def __init__(self,
+                 screen,
+                 pos=(0, 0),
+                 fade_in_duration=FADE_DURATION,
+                 fade_out_duration=FADE_DURATION,
+                 on_close=None,
+                 ):
         self.screen = screen
+        self.pos = pos
+        self.fade_in_duration = fade_in_duration
+        self.fade_out_duration = fade_out_duration
+        self.fade_ticks_remaining = fade_in_duration
         self.on_close = on_close
+
         self.is_closing = False
-        self.fade_ticks_remaining = FADE_DURATION
 
         self.surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
 
     def close(self):
-        self.fade_ticks_remaining = FADE_DURATION
+        self.fade_ticks_remaining = self.fade_out_duration
         self.is_closing = True
 
-    def fade_surface(self):
+    # called on each render
+    def _fade_surface(self):
         alpha = 255
 
         if self.fade_ticks_remaining > 0:
@@ -42,9 +53,11 @@ class Fader(object):
                 if self.fade_ticks_remaining <= 0:
                     self.has_closed = true
                     return False
-                alpha = self.fade_ticks_remaining * (255 / FADE_DURATION)
+                alpha = self.fade_ticks_remaining * \
+                    (255 / self.fade_out_duration)
             else:
-                alpha = 255 - self.fade_ticks_remaining * (255 / FADE_DURATION)
+                alpha = 255 - self.fade_ticks_remaining * \
+                    (255 / self.fade_in_duration)
 
             self.fade_ticks_remaining -= 1
 
@@ -55,6 +68,6 @@ class Fader(object):
             self.on_close and self.on_close()
             return False
 
-        self.fade_surface()
+        self._fade_surface()
 
         self.screen.blit(self.surface, (0, 0))

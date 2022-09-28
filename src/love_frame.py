@@ -20,6 +20,9 @@ class LoveFrame(object):
         self.renderables = Renderables()
         self.renderGallery()
 
+    def handle_menu_closing(self, action):
+        self.renderGallery()
+
     def renderGallery(self):
         gallery = Gallery(
             screen,
@@ -30,7 +33,7 @@ class LoveFrame(object):
     def renderMenu(self):
         menu = Menu(
             screen,
-            on_closing=self.renderGallery
+            on_closing=self.handle_menu_closing
         )
         self.renderables.append(menu)
 
