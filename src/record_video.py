@@ -7,14 +7,10 @@ from lib.renderables import Renderables
 from components.fader import Fader
 from components.text import Text
 from components.button import Button, ButtonSize
+from components.live_video import LiveVideo
 
 
-class MenuActions(object):
-    GALLERY = 0
-    RECORD_VIDEO = 1
-
-
-class Menu(object):
+class RecordVideo(object):
 
     def __init__(self, screen, on_closing=None):
         self.screen = screen
@@ -26,19 +22,15 @@ class Menu(object):
                            on_close=self.handle_fader_close)
         self.renderables = Renderables()
         self.renderables.append([
-            Text(self.fader.surface, "Press the big green button",
-                 56, (50, 60), Colors.GREEN),
-            Text(self.fader.surface, "...below to leave a loving message",
+            Text(self.fader.surface, "Great!  Let's record a 15 second video..",
+                 56, (50, 60), Colors.OFF_WHITE),
+            Text(self.fader.surface, "...and don't forget to speak up.",
                  36, (90, 105), Colors.ALMOST_BLACK),
-            Button(self.fader.surface, "Record",
-                   pos=(700, 300),
-                   size=ButtonSize.LARGE,
-                   bg_color=Colors.GREEN,
-                   fg_color=Colors.ALMOST_BLACK,
-                   on_click=self.handle_record_click
-                   ),
-            # fader must be last
+
             self.fader,
+
+            # render live video outside of fader
+            LiveVideo(screen),
         ])
 
     def close(self, action):
@@ -46,13 +38,21 @@ class Menu(object):
         hasattr(self, "on_closing") and self.on_closing(action)
 
     def handle_record_click(self):
-        self.close(MenuActions.RECORD_VIDEO)
+        self.close("record")
 
     def handle_fader_close(self):
         self.has_closed = True
 
     def handle_pyg_event(self, event):
-        return self.renderables.handle_pyg_event(event)
+        # return self.renderables.handle_pyg_event(event)
+
+        if event.type == MOUSEBUTTONDOWN:
+            self.on_closing and self.on_closing()
+            self.fader.close()
+
+            return True  # stop propagation
+
+        return False
 
     def render(self):
         if self.has_closed:

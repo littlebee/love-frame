@@ -4,9 +4,11 @@ import pygame
 import sys
 import cv2
 
-from gallery import Gallery
-from menu import Menu
 from lib.renderables import Renderables
+
+from gallery import Gallery
+from menu import Menu, MenuActions
+from record_video import RecordVideo
 
 
 pygame.init()
@@ -17,11 +19,16 @@ screen = pygame.display.set_mode([1024, 600], pygame.NOFRAME)
 class LoveFrame(object):
 
     def __init__(self):
+        self.clock = pygame.time.Clock()
+
         self.renderables = Renderables()
         self.renderGallery()
 
     def handle_menu_closing(self, action):
-        self.renderGallery()
+        if action == MenuActions.RECORD_VIDEO:
+            self.renderRecordVideo()
+        else:
+            self.renderGallery()
 
     def renderGallery(self):
         gallery = Gallery(
@@ -37,6 +44,10 @@ class LoveFrame(object):
         )
         self.renderables.append(menu)
 
+    def renderRecordVideo(self):
+        record_video = RecordVideo(screen, on_closing=self.renderGallery)
+        self.renderables.append(record_video)
+
     def render_loop(self):
         try:
             while True:
@@ -51,6 +62,7 @@ class LoveFrame(object):
                 screen.fill((0, 0, 0))
                 self.renderables.render()
                 pygame.display.update()
+                self.clock.tick(30)
 
         except (KeyboardInterrupt, SystemExit):
             pygame.quit()

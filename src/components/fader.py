@@ -1,7 +1,7 @@
 import pygame
 
 
-FADE_DURATION = 200  # in game clock ticks
+FADE_DURATION = 30 * .75  # in game clock ticks (@30fps = ~750ms)
 
 
 class Fader(object):
