@@ -6,7 +6,6 @@ from pygame.locals import MOUSEBUTTONDOWN
 from lib.colors import Colors
 from lib.renderables import Renderables
 
-from components.fader import Fader
 from components.text import Text
 
 

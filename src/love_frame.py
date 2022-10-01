@@ -4,11 +4,14 @@ import pygame
 import sys
 import cv2
 
+from lib.constants import RENDER_FPS
 from lib.renderables import Renderables
 
 from gallery import Gallery
 from menu import Menu, MenuActions
 from record_video import RecordVideo
+
+from components.live_video import LiveVideo
 
 
 pygame.init()
@@ -19,9 +22,13 @@ screen = pygame.display.set_mode([1024, 600], pygame.NOFRAME)
 class LoveFrame(object):
 
     def __init__(self):
-        self.clock = pygame.time.Clock()
+        # ## Using a Surface causes video lag :(
+        # self.surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        self.surface = screen
 
+        self.clock = pygame.time.Clock()
         self.renderables = Renderables()
+
         self.renderGallery()
 
     def handle_menu_closing(self, action):
@@ -32,20 +39,20 @@ class LoveFrame(object):
 
     def renderGallery(self):
         gallery = Gallery(
-            screen,
+            self.surface,
             on_closing=self.renderMenu
         )
         self.renderables.append(gallery)
 
     def renderMenu(self):
         menu = Menu(
-            screen,
+            self.surface,
             on_closing=self.handle_menu_closing
         )
         self.renderables.append(menu)
 
     def renderRecordVideo(self):
-        record_video = RecordVideo(screen, on_closing=self.renderGallery)
+        record_video = RecordVideo(self.surface, on_closing=self.renderGallery)
         self.renderables.append(record_video)
 
     def render_loop(self):
@@ -59,12 +66,15 @@ class LoveFrame(object):
 
                     self.renderables.handle_pyg_event(event)
 
-                screen.fill((0, 0, 0))
+                self.surface.fill((0, 0, 0))
                 self.renderables.render()
+
+                # screen.blit(self.surface, (0, 0))
                 pygame.display.update()
-                self.clock.tick(30)
+                self.clock.tick(RENDER_FPS)
 
         except (KeyboardInterrupt, SystemExit):
+            self.renderables.close()
             pygame.quit()
             cv2.destroyAllWindows()
 

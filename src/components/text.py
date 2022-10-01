@@ -13,6 +13,7 @@ class Text(object):
         bg_color=None
     ):
         self.screen = screen
+        self.has_closed = False
 
         # 1st parameter is the font file
         # which is present in pygame.
@@ -34,5 +35,13 @@ class Text(object):
         # set the center of the rectangular object.
         self.textRect.center = (screen_w // 2, screen_h // 2)
 
+    def close(self):
+        self.has_closed = True
+
     def render(self):
+        if self.has_closed:
+            return False
+
         self.screen.blit(self.text, self.textRect)
+
+        return True

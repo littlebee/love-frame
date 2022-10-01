@@ -6,9 +6,15 @@ import cv2
 import sys
 
 camera = cv2.VideoCapture(0)
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+camera.set(cv2.CAP_PROP_FOURCC,
+           cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+camera.set(cv2.CAP_PROP_FPS, 30)
+
 pygame.init()
 pygame.display.set_caption("debug/test-pygame-live-video")
-screen = pygame.display.set_mode([1280, 720])
+screen = pygame.display.set_mode([1024, 600])
 
 
 def convert_opencv_img_to_pygame(opencv_image):

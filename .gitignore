@@ -8,6 +8,7 @@ data/
 server.pid
 server.log
 
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
