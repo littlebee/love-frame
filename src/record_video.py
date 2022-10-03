@@ -7,9 +7,10 @@ from lib.sequenced_renderables import SequencedRenderables
 from components.text import Text
 from components.button import Button, ButtonSize
 from components.live_video import LiveVideo
+from components.exploding_text import ExplodingText
 
 # seconds until recording starts
-LEAD_IN_TIME = 5
+LEAD_IN_TIME = 4
 # default recording length in seconds
 RECORDING_DURATION = 15
 
@@ -35,7 +36,17 @@ class RecordVideo(object):
                      36, (600, 500), Colors.ALMOST_BLACK)
              ],
 
-            [LEAD_IN_TIME, 0, self._start_recording],
+            [1, 0, lambda:
+              ExplodingText(self.surface, "3", font_size=70, color=Colors.RED, duration=1.15)
+            ],
+            [2, 0, lambda:
+              ExplodingText(self.surface, "2", font_size=70, color=Colors.RED, duration=1.15)
+            ],
+            [3, 0, lambda:
+              ExplodingText(self.surface, "1", font_size=70, color=Colors.RED, duration=1.15)
+            ],
+
+            # [LEAD_IN_TIME, 0, self._start_recording],
 
             [LEAD_IN_TIME + RECORDING_DURATION, 0, lambda:
                 Text(self.surface, f"Looks Great! They're going to love it.",
