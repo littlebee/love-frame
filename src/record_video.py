@@ -4,15 +4,19 @@ from pygame.locals import MOUSEBUTTONDOWN
 from lib.colors import Colors
 from lib.sequenced_renderables import SequencedRenderables
 
+from components.horz_panel import HorzPanel
 from components.text import Text
 from components.button import Button, ButtonSize
 from components.live_video import LiveVideo
 from components.exploding_text import ExplodingText
+from components.recording_overlay import RecordingOverlay
 
 # seconds until recording starts
 LEAD_IN_TIME = 4
 # default recording length in seconds
-RECORDING_DURATION = 15
+RECORDING_DURATION = 15000
+# review starts after the above
+REVIEW_STARTS = LEAD_IN_TIME + RECORDING_DURATION
 
 
 class RecordVideo(object):
@@ -28,9 +32,15 @@ class RecordVideo(object):
         self.renderables.append([
             [0, 0, lambda: self.live_video],
             [0, LEAD_IN_TIME, lambda:
+                HorzPanel(self.surface, top=0, height=140)
+            ],
+            [0, LEAD_IN_TIME, lambda:
                 Text(self.surface, f"Great!  Let's record a {RECORDING_DURATION} second video...",
-                     56, (50, 60), Colors.ALMOST_BLACK)
+                     56, (50, 50), Colors.ALMOST_BLACK)
              ],
+            [0, LEAD_IN_TIME, lambda:
+                HorzPanel(self.surface, top=450, height=150)
+            ],
             [0, LEAD_IN_TIME, lambda:
                 Text(self.surface, "...and don't forget to speak up.",
                      36, (600, 500), Colors.ALMOST_BLACK)
@@ -46,12 +56,23 @@ class RecordVideo(object):
               ExplodingText(self.surface, "1", font_size=70, color=Colors.RED, duration=1.15)
             ],
 
+            [LEAD_IN_TIME, RECORDING_DURATION, lambda :
+                RecordingOverlay(self.surface, RECORDING_DURATION)
+            ],
+            # Sequenced renderables can also just be functions not returning a renderable
             # [LEAD_IN_TIME, 0, self._start_recording],
 
-            [LEAD_IN_TIME + RECORDING_DURATION, 0, lambda:
-                Text(self.surface, f"Looks Great! They're going to love it.",
-                     56, (50, 60), Colors.ALMOST_BLACK)
-             ],
+
+            # [REVIEW_STARTS, 0, lambda:
+            #     HorzPanel(self.surface, top=0, height=140)
+            # ],
+            # [REVIEW_STARTS, 0, lambda:
+            #     Text(self.surface, f"Looks Great! They're going to love it.",
+            #          56, (50, 50), Colors.ALMOST_BLACK)
+            #  ],
+            # [REVIEW_STARTS, 0, lambda:
+            #     HorzPanel(self.surface, top=450, height=150)
+            # ],
 
         ])
 

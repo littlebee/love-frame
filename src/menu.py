@@ -15,11 +15,11 @@ class MenuActions(object):
 
 class Menu(object):
 
-    def __init__(self, screen, on_closing=None):
+    def __init__(self, surface, on_closing=None):
         self.on_closing = on_closing
         self.has_closed = False
 
-        self.surface = screen
+        self.surface = surface
 
         self.renderables = Renderables()
         self.renderables.append([
@@ -38,8 +38,7 @@ class Menu(object):
 
     def close(self, action):
         self.has_closed = True
-
-        hasattr(self, "on_closing") and self.on_closing(action)
+        self.on_closing(action)
 
     def handle_record_click(self):
         self.close(MenuActions.RECORD_VIDEO)
@@ -51,6 +50,7 @@ class Menu(object):
         if self.has_closed:
             return False
 
+        # this is full screen window
         self.surface.fill(Colors.OFF_WHITE)
         self.renderables.render()
 

@@ -78,7 +78,7 @@ class Button(object):
 
     def handle_pyg_event(self, event):
         if event.type == MOUSEBUTTONDOWN and self.point_intersects(event.pos):
-            hasattr(self, "on_click") and self.on_click()
+            self.on_click()
             return True  # stop propagation
 
         return False

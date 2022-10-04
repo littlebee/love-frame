@@ -59,6 +59,7 @@ class LoveFrame(object):
         try:
             while True:
                 for event in pygame.event.get():
+                    print(f"got event from pygame {event}")
                     isQuitKey = event.type == KEYDOWN and event.key == K_q
                     if event.type == pygame.QUIT or isQuitKey:
                         sys.exit(0)
@@ -69,7 +70,9 @@ class LoveFrame(object):
                 self.surface.fill((0, 0, 0))
                 self.renderables.render()
 
+                # using a surface here increased live video lag
                 # screen.blit(self.surface, (0, 0))
+
                 pygame.display.update()
                 self.clock.tick(RENDER_FPS)
 
