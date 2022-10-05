@@ -1,10 +1,7 @@
-from enum import Enum
-
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 
 from lib.colors import Colors
-from lib.renderables import Renderables
 
 class Circle(object):
     """
@@ -27,9 +24,9 @@ class Circle(object):
 
         self.has_closed = False
 
-    def set_color(self, color):
+    def set_color(self, color, alpha=255):
         self.color = pygame.Color(color)
-        self.color.a = self.alpha
+        self.color.a = alpha
 
     def set_alpha(self, alpha):
         self.color.a = int(alpha)
@@ -37,7 +34,7 @@ class Circle(object):
     def close(self):
         self.has_closed = True
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 

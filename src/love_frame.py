@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
+import cv2
 from pygame.locals import KEYDOWN, K_ESCAPE, K_q
 import pygame
 import sys
-import cv2
+import time
 
 from lib.constants import RENDER_FPS
 from lib.renderables import Renderables
+from lib.pygame_utils import translate_touch_event
 
 from gallery import Gallery
 from menu import Menu, MenuActions
@@ -59,16 +61,20 @@ class LoveFrame(object):
         try:
             while True:
                 for event in pygame.event.get():
-                    print(f"got event from pygame {event}")
+                    # print(f"got event from pygame {event}")
                     isQuitKey = event.type == KEYDOWN and event.key == K_q
                     if event.type == pygame.QUIT or isQuitKey:
                         sys.exit(0)
                         break
-
-                    self.renderables.handle_pyg_event(event)
+                    translated_event = translate_touch_event(self.surface, event)
+                    self.renderables.handle_pyg_event(translated_event)
 
                 self.surface.fill((0, 0, 0))
-                self.renderables.render()
+
+                # the current timestamp is passed so that animated components can
+                # have a reliable time sequence when running on slower SBCs like
+                # the raspberry pi4
+                self.renderables.render(time.time())
 
                 # using a surface here increased live video lag
                 # screen.blit(self.surface, (0, 0))

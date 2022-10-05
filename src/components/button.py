@@ -69,11 +69,11 @@ class Button(object):
             self.surface, label, BUTTON_SHAPES[size]["font_size"])
         self.textComponent.center_on_screen()
 
-    def render(self):
+    def render(self, t):
         center = (self.radius, self.radius)
         pygame.draw.circle(self.surface, self.bg_color,
                            center, self.radius, self.radius)
-        self.textComponent.render()
+        self.textComponent.render(t)
         self.screen.blit(self.surface, self.pos)
 
     def handle_pyg_event(self, event):

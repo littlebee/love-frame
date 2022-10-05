@@ -35,7 +35,7 @@ class HorzPanel(object):
     def close(self):
         self.has_closed = True
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 

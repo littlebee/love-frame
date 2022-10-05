@@ -14,7 +14,7 @@ from components.recording_overlay import RecordingOverlay
 # seconds until recording starts
 LEAD_IN_TIME = 4
 # default recording length in seconds
-RECORDING_DURATION = 15000
+RECORDING_DURATION = 15
 # review starts after the above
 REVIEW_STARTS = LEAD_IN_TIME + RECORDING_DURATION
 
@@ -30,7 +30,7 @@ class RecordVideo(object):
 
         self.renderables = SequencedRenderables()
         self.renderables.append([
-            [0, 0, lambda: self.live_video],
+            [0, REVIEW_STARTS, lambda: self.live_video],
             [0, LEAD_IN_TIME, lambda:
                 HorzPanel(self.surface, top=0, height=140)
             ],
@@ -63,16 +63,16 @@ class RecordVideo(object):
             # [LEAD_IN_TIME, 0, self._start_recording],
 
 
-            # [REVIEW_STARTS, 0, lambda:
-            #     HorzPanel(self.surface, top=0, height=140)
-            # ],
-            # [REVIEW_STARTS, 0, lambda:
-            #     Text(self.surface, f"Looks Great! They're going to love it.",
-            #          56, (50, 50), Colors.ALMOST_BLACK)
-            #  ],
-            # [REVIEW_STARTS, 0, lambda:
-            #     HorzPanel(self.surface, top=450, height=150)
-            # ],
+            [REVIEW_STARTS, 0, lambda:
+                HorzPanel(self.surface, top=0, height=140)
+            ],
+            [REVIEW_STARTS, 0, lambda:
+                Text(self.surface, f"Looks Great! They're going to love it.",
+                     56, (50, 50), Colors.ALMOST_BLACK)
+             ],
+            [REVIEW_STARTS, 0, lambda:
+                HorzPanel(self.surface, top=450, height=150)
+            ],
 
         ])
 
@@ -91,13 +91,13 @@ class RecordVideo(object):
 
         return self.renderables.handle_pyg_event(event)
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 
         # this is full screen window
-        self.surface.fill(Colors.OFF_WHITE)
-        self.renderables.render()
+        self.surface.fill(Colors.ALMOST_BLACK)
+        self.renderables.render(t)
 
         return True
 

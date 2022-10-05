@@ -5,6 +5,8 @@ from lib.colors import Colors
 
 from components.text import Text
 from components.flashing_light import FlashingLight
+from components.timer import Timer
+from components.battery import Battery
 
 class RecordingOverlay(object):
     """
@@ -26,16 +28,18 @@ class RecordingOverlay(object):
         self.renderables.append([
             FlashingLight(surface, 10, (45, 47), Colors.RED),
             Text(surface, "Rec", 24, (60, 40), Colors.GREY),
+            Timer(surface, 36, (480, 540), stop_after=recording_duration),
+            Battery(surface, duration=recording_duration),
         ])
 
 
     def close(self):
         self.has_closed = True
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 
-        self.renderables.render()
+        self.renderables.render(t)
 
         return True

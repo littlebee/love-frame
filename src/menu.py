@@ -46,12 +46,12 @@ class Menu(object):
     def handle_pyg_event(self, event):
         return self.renderables.handle_pyg_event(event)
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 
         # this is full screen window
         self.surface.fill(Colors.OFF_WHITE)
-        self.renderables.render()
+        self.renderables.render(t)
 
         return True

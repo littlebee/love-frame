@@ -38,11 +38,11 @@ class Gallery(object):
 
         return False
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 
-        if time.time() - self.last_image_at > DISPLAY_SECONDS:
+        if t - self.last_image_at > DISPLAY_SECONDS:
             self._get_next_image()
 
         if self.image != None:

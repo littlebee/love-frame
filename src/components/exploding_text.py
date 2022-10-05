@@ -6,7 +6,7 @@ import lib.constants as const
 from components.text import Text
 
 STARTING_FONT_SIZE = 50
-SCALING_FACTOR = .1
+SCALING_FACTOR = 2.5
 
 class ExplodingText(object):
 
@@ -34,8 +34,7 @@ class ExplodingText(object):
         self.is_closing = False
         self.has_closed = False
 
-        self.render_ticks = 0
-        self.fade_ticks = 0
+        self.started_at = time.time()
 
         # TODO : I couldn't find a preinstalled font that mac and rpi had in common :/
         #   Just let it choose one for now
@@ -44,19 +43,18 @@ class ExplodingText(object):
     def close(self):
         self.is_closing = True
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 
-        self.render_ticks += 1;
-        elapsed = self.render_ticks / const.RENDER_FPS
+        elapsed = t - self.started_at
 
         if  elapsed > self.delay + self.duration:
             self.has_closed = True
             return False
 
         if elapsed > self.delay:
-            text, text_rect = self._scale_text()
+            text, text_rect = self._scale_text(elapsed)
         else:
             text = self.font.render(self.value, True, self.color, None)
             text_rect = text.get_rect()
@@ -68,12 +66,11 @@ class ExplodingText(object):
         self.surface.blit(text, text_rect)
         return True
 
-    def _scale_text(self):
-        self.fade_ticks += 1
-        elapsed = self.fade_ticks / const.RENDER_FPS
+    def _scale_text(self, elapsed):
+        fade_elapsed = elapsed - self.delay
 
-        scale = 1 + (SCALING_FACTOR * self.fade_ticks);
-        alpha = int(255 - (self.duration / elapsed))
+        scale = 1 + (SCALING_FACTOR * fade_elapsed);
+        alpha = int(255 - (self.duration / fade_elapsed))
 
         # Alpha fade using .set_alpha() like below or adjusting it in the
         # color doesn't work on Raspian Buster + pygame 2.1.2 (SDL 2.0.9, Python 3.7.3)

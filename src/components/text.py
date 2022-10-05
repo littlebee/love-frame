@@ -2,6 +2,14 @@ import pygame
 
 
 class Text(object):
+    """
+        The Text object is for displaying immutable, static text.
+
+        This component does not self destruct
+
+        See also (./mutable_text.py) for a mutable version
+    """
+
 
     def __init__(
         self,
@@ -9,7 +17,7 @@ class Text(object):
         value,
         font_size=32,
         position=(0, 0),
-        fg_color=(128, 128, 128),
+        fg_color=(127, 127, 127),
         bg_color=None
     ):
         self.screen = screen
@@ -38,7 +46,7 @@ class Text(object):
     def close(self):
         self.has_closed = True
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 

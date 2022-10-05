@@ -76,7 +76,7 @@ class LiveVideo(object):
             target=self._recording_thread)
         self.recording_thread.start()
 
-    def render(self):
+    def render(self, t):
         if self.has_closed:
             return False
 
