@@ -8,7 +8,7 @@ class MutableText(object):
 
         This component does not self destruct
 
-        See also (./text.py) for a immutable version for use with static text.
+        See also (./text.py) for an immutable version for use with static text.
     """
 
 

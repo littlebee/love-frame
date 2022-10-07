@@ -13,7 +13,7 @@ class RecordingOverlay(object):
         Renders an overlay similar to an old school camcorder that is displayed
         when recording video message.
 
-        This component self destructs after recording_duration.
+        This component does not self destruct
     """
 
     def __init__(
@@ -26,9 +26,9 @@ class RecordingOverlay(object):
 
         self.renderables = Renderables()
         self.renderables.append([
-            FlashingLight(surface, 10, (45, 47), Colors.RED),
-            Text(surface, "Rec", 24, (60, 40), Colors.GREY),
-            Timer(surface, 36, (480, 540), stop_after=recording_duration),
+            FlashingLight(surface, 10, (60, 67), Colors.RED),
+            Text(surface, "Rec", 24, (75, 60), Colors.GREY),
+            Timer(surface, 36, (480, 500), stop_after=recording_duration),
             Battery(surface, duration=recording_duration),
         ])
 

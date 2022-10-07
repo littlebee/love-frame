@@ -23,7 +23,7 @@ class Rectangle(object):
         border_color=0,
     ):
         self.surface = surface
-        self.rect = rect
+        self.rect = pygame.Rect(rect)
         self.color = color and pygame.Color(color) or None
         self.border_width = border_width
         self.border_radius = border_radius
@@ -42,6 +42,9 @@ class Rectangle(object):
     def set_alpha(self, alpha):
         if self.color:
             self.color.a = int(alpha)
+
+    def set_width(self, width):
+        self.rect.width = width
 
     def close(self):
         self.has_closed = True

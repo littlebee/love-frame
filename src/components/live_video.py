@@ -87,25 +87,28 @@ class LiveVideo(object):
 
     # video capture thread is always running from init to close()
     def _video_thread(self):
-        print("_video_thread starting")
+        print("live_video: _video_thread starting")
 
         frame_buffer = []
         while not self.has_closed:
             ret, frame = self.camera.read()
             self.last_frame = opencv_to_pyg(frame)
             if self.recording_started_at != None and time.time() - self.recording_started_at < self.recording_duration:
+                print('appending frame')
                 frame_buffer.append(frame)
             elif len(frame_buffer) > 0:
+                print(f"publishing {len(frame_buffer)} frames")
                 self.recorded_video_frames = frame_buffer
                 self.recording_started_at = None
-                frame_buffer = []
+                # after recording, stop video thread
+                break;
 
-        print("_video_thread stopping")
+        print("live_video: _video_thread stopping")
 
     # audio capture thread is started by record() and runs for
     # self.recording_duration
     def _recording_thread(self):
-        print("_recording_thread starting")
+        print("live_video: _recording_thread starting")
 
         # tell the already running video thread to start saving frames
         self.recording_started_at = time.time()
@@ -113,9 +116,11 @@ class LiveVideo(object):
         self._record_audio()
         self._save_raw_audio()
 
-        # video thread should be long done saving frames
+        print('live_video: waiting on video thread to finish..')
+        self.video_thread.join()
+        print('live_video: saving raw video to file')
         self._save_raw_video()
-        print("_recording_thread finished")
+        print("live_video: _recording_thread finished")
 
     # synchronous
     def _record_audio(self):

@@ -10,13 +10,17 @@ from components.button import Button, ButtonSize
 from components.live_video import LiveVideo
 from components.exploding_text import ExplodingText
 from components.recording_overlay import RecordingOverlay
+from components.recorded_video import RecordedVideo
+from components.timed_progress import TimedProgress
 
 # seconds until recording starts
 LEAD_IN_TIME = 4
 # default recording length in seconds
 RECORDING_DURATION = 15
+# seconds it takes to save
+SAVING_DURATION = 8
 # review starts after the above
-REVIEW_STARTS = LEAD_IN_TIME + RECORDING_DURATION
+REVIEW_STARTS = LEAD_IN_TIME + RECORDING_DURATION + SAVING_DURATION
 
 
 class RecordVideo(object):
@@ -30,7 +34,7 @@ class RecordVideo(object):
 
         self.renderables = SequencedRenderables()
         self.renderables.append([
-            [0, REVIEW_STARTS, lambda: self.live_video],
+            [0, LEAD_IN_TIME + RECORDING_DURATION, lambda: self.live_video],
             [0, LEAD_IN_TIME, lambda:
                 HorzPanel(self.surface, top=0, height=140)
             ],
@@ -59,19 +63,26 @@ class RecordVideo(object):
             [LEAD_IN_TIME, RECORDING_DURATION, lambda :
                 RecordingOverlay(self.surface, RECORDING_DURATION)
             ],
-            # Sequenced renderables can also just be functions not returning a renderable
-            # [LEAD_IN_TIME, 0, self._start_recording],
 
+            # Sequenced renderables can also just be functions not returning a renderable
+            [LEAD_IN_TIME, 0, self._start_recording],
+
+            [LEAD_IN_TIME+RECORDING_DURATION, SAVING_DURATION, lambda :
+                TimedProgress(self.surface)
+            ],
 
             [REVIEW_STARTS, 0, lambda:
+                RecordedVideo(self.surface)
+            ],
+            [REVIEW_STARTS+5, 0, lambda:
                 HorzPanel(self.surface, top=0, height=140)
             ],
-            [REVIEW_STARTS, 0, lambda:
+            [REVIEW_STARTS+5, 0, lambda:
                 Text(self.surface, f"Looks Great! They're going to love it.",
                      56, (50, 50), Colors.ALMOST_BLACK)
              ],
-            [REVIEW_STARTS, 0, lambda:
-                HorzPanel(self.surface, top=450, height=150)
+            [REVIEW_STARTS+5, 0, lambda:
+                HorzPanel(self.surface, top=400, height=200)
             ],
 
         ])

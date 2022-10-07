@@ -38,10 +38,10 @@ class Text(object):
         self.textRect = self.text.get_rect()
         self.textRect.topleft = position
 
-    def center_on_screen(self):
+    def center_on_screen(self, x_offset=0, y_offset=0):
         screen_w, screen_h = self.screen.get_size()
         # set the center of the rectangular object.
-        self.textRect.center = (screen_w // 2, screen_h // 2)
+        self.textRect.center = (screen_w // 2 + x_offset, screen_h // 2 + y_offset)
 
     def close(self):
         self.has_closed = True
