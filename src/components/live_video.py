@@ -112,6 +112,7 @@ class LiveVideo(object):
                 print(f"live_video: publishing {len(frame_buffer)} frames")
                 self.recorded_video_frames = frame_buffer
                 self.recording_started_at = None
+
                 # after recording, stop video thread
                 break;
 
