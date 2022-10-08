@@ -28,7 +28,7 @@ class HorzPanel(object):
         drawing_rect = pygame.Rect(0, 0, parent_w, height)
 
         color = pygame.Color(255, 255, 255)
-        color.a = 128
+        color.a = 98
 
         pygame.draw.rect(self.surface, color, drawing_rect)
 

@@ -12,6 +12,8 @@ from components.exploding_text import ExplodingText
 from components.recording_overlay import RecordingOverlay
 from components.recorded_video import RecordedVideo
 from components.timed_progress import TimedProgress
+from components.button import Button, ButtonSize
+from components.timer import Timer
 
 # seconds until recording starts
 LEAD_IN_TIME = 4
@@ -22,6 +24,8 @@ SAVING_DURATION = 8
 # review starts after the above
 REVIEW_STARTS = LEAD_IN_TIME + RECORDING_DURATION + SAVING_DURATION
 
+# seconds until autosave at end of review
+AUTOSAVE_AFTER = 20
 
 class RecordVideo(object):
 
@@ -34,21 +38,17 @@ class RecordVideo(object):
 
         self.renderables = SequencedRenderables()
         self.renderables.append([
-            [0, LEAD_IN_TIME + RECORDING_DURATION, lambda: self.live_video],
-            [0, LEAD_IN_TIME, lambda:
-                HorzPanel(self.surface, top=0, height=140)
-            ],
-            [0, LEAD_IN_TIME, lambda:
+            [0, REVIEW_STARTS, lambda: self.live_video],
+            [0, LEAD_IN_TIME, lambda: [
+                HorzPanel(self.surface, top=0, height=140),
                 Text(self.surface, f"Great!  Let's record a {RECORDING_DURATION} second video...",
-                     56, (50, 50), Colors.ALMOST_BLACK)
-             ],
-            [0, LEAD_IN_TIME, lambda:
-                HorzPanel(self.surface, top=450, height=150)
-            ],
-            [0, LEAD_IN_TIME, lambda:
+                     56, (50, 50), Colors.ALMOST_BLACK
+                ),
+                HorzPanel(self.surface, top=450, height=150),
                 Text(self.surface, "...and don't forget to speak up.",
-                     36, (600, 500), Colors.ALMOST_BLACK)
-             ],
+                     36, (600, 500), Colors.ALMOST_BLACK
+                ),
+            ]],
 
             [1, 0, lambda:
               ExplodingText(self.surface, "3", font_size=70, color=Colors.RED, duration=1.15)
@@ -68,23 +68,46 @@ class RecordVideo(object):
             [LEAD_IN_TIME, 0, self._start_recording],
 
             [LEAD_IN_TIME+RECORDING_DURATION, SAVING_DURATION, lambda :
-                TimedProgress(self.surface)
+                TimedProgress(self.surface, duration=SAVING_DURATION)
             ],
 
             [REVIEW_STARTS, 0, lambda:
                 RecordedVideo(self.surface)
             ],
-            [REVIEW_STARTS+5, 0, lambda:
-                HorzPanel(self.surface, top=0, height=140)
-            ],
-            [REVIEW_STARTS+5, 0, lambda:
-                Text(self.surface, f"Looks Great! They're going to love it.",
-                     56, (50, 50), Colors.ALMOST_BLACK)
-             ],
-            [REVIEW_STARTS+5, 0, lambda:
-                HorzPanel(self.surface, top=400, height=200)
-            ],
 
+            [REVIEW_STARTS + 13, 0, lambda: [
+                HorzPanel(self.surface, top=0, height=140),
+                Text(self.surface, "Looks Great! They're going to love it.",
+                     56, (50, 50), Colors.ALMOST_BLACK),
+                HorzPanel(self.surface, top=400, height=200),
+                Button(self.surface, "Keep it!",
+                   pos=(800, 405),
+                   size=ButtonSize.MEDIUM,
+                   bg_color=Colors.GREEN,
+                   fg_color=Colors.ALMOST_BLACK,
+                   on_click=self.handle_save_click,
+                ),
+                Text(self.surface, "Auto-keep in", 24, (830, 520)),
+                Timer(self.surface, (933, 520),
+                      font_size=24,
+                      reverse=True,
+                      stop_after=AUTOSAVE_AFTER,
+                      on_stop=self.handle_save_click,
+                      show_hours=False,
+                      show_minutes=False,
+                ),
+            ]],
+            [REVIEW_STARTS + 14, 0, lambda:
+                Button(self.surface, "Discard",
+                       pos=(620, 455),
+                       size=ButtonSize.SMALL,
+                       bg_color=Colors.RED,
+                       fg_color=Colors.OFF_WHITE,
+                       on_click=self.handle_discard_click,
+                       )
+
+
+            ]
         ])
 
     def close(self):
@@ -94,12 +117,16 @@ class RecordVideo(object):
 
         hasattr(self, "on_closing") and self.on_closing()
 
-    def handle_pyg_event(self, event):
-        # TODO : remove this
-        if event.type == MOUSEBUTTONDOWN:
-            self.close()
-            return True  # stop propagation
+    def handle_save_click(self):
+        # TODO : add a heart animation and lighting effect
+        self.live_video.save()
+        self.close()
 
+    def handle_discard_click(self):
+        # TODO : maybe add a sad trombone sound here
+        self.close()
+
+    def handle_pyg_event(self, event):
         return self.renderables.handle_pyg_event(event)
 
     def render(self, t):

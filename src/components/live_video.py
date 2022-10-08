@@ -1,4 +1,5 @@
 import cv2
+import os
 import pyaudio
 import threading
 import time
@@ -18,6 +19,8 @@ AUDIO_CHANNELS = 2
 # 44100 causes pyaudio to freak if using sudo. R    oot has a lower sample rate?
 AUDIO_RATE = 32000
 RAW_AUDIO_FILE = "data/raw.wav"
+# directory where saved av files go
+SAVED_VIDEOS_DIR = "data/messages"
 
 
 class LiveVideo(object):
@@ -59,12 +62,14 @@ class LiveVideo(object):
     def __del__(self):
         self.close()
 
+
     # needs to be called externally.  This component doesn't self destruct
     def close(self):
         if not self.has_closed:
             self.has_closed = True
             self.video_thread.join()
             self.camera.release()
+
 
     # record() needs to be async
     def record(self, duration):
@@ -75,6 +80,14 @@ class LiveVideo(object):
         self.recording_thread = threading.Thread(
             target=self._recording_thread)
         self.recording_thread.start()
+
+
+    #  move raw files to perm storage
+    def save(self):
+        name = f"{int(time.time() * 1000)}"
+        os.rename(RAW_VIDEO_FILE, f"{SAVED_VIDEOS_DIR}/{name}.mp4")
+        os.rename(RAW_AUDIO_FILE, f"{SAVED_VIDEOS_DIR}/{name}.wav")
+
 
     def render(self, t):
         if self.has_closed:
@@ -94,16 +107,16 @@ class LiveVideo(object):
             ret, frame = self.camera.read()
             self.last_frame = opencv_to_pyg(frame)
             if self.recording_started_at != None and time.time() - self.recording_started_at < self.recording_duration:
-                print('appending frame')
                 frame_buffer.append(frame)
             elif len(frame_buffer) > 0:
-                print(f"publishing {len(frame_buffer)} frames")
+                print(f"live_video: publishing {len(frame_buffer)} frames")
                 self.recorded_video_frames = frame_buffer
                 self.recording_started_at = None
                 # after recording, stop video thread
                 break;
 
         print("live_video: _video_thread stopping")
+
 
     # audio capture thread is started by record() and runs for
     # self.recording_duration
@@ -121,6 +134,7 @@ class LiveVideo(object):
         print('live_video: saving raw video to file')
         self._save_raw_video()
         print("live_video: _recording_thread finished")
+
 
     # synchronous
     def _record_audio(self):
@@ -146,8 +160,9 @@ class LiveVideo(object):
 
         self.recorded_audio_frames = audio_frames
 
+
     def _save_raw_audio(self):
-        print(f"saving audio to {RAW_AUDIO_FILE}")
+        print(f"live_video: saving audio to {RAW_AUDIO_FILE}")
         t_start = time.time()
         # now save the audio frames to a .wav
         wf = wave.open(RAW_AUDIO_FILE, 'wb')
@@ -157,11 +172,12 @@ class LiveVideo(object):
         wf.writeframes(b''.join(self.recorded_audio_frames))
         wf.close()
 
-        print(f"saved audio to {RAW_AUDIO_FILE} in {time.time() - t_start}s")
+        print(f"live_video: saved audio to {RAW_AUDIO_FILE} in {time.time() - t_start}s")
+
 
     def _save_raw_video(self):
         print(
-            f"saving file {RAW_VIDEO_FILE} - {len(self.recorded_video_frames)} frames")
+            f"live_video: saving file {RAW_VIDEO_FILE} - {len(self.recorded_video_frames)} frames")
 
         capture_fps = len(self.recorded_video_frames) / self.recording_duration
         t_start = time.time()
@@ -176,4 +192,4 @@ class LiveVideo(object):
 
         writer.release()
         print(
-            f"saved file {RAW_VIDEO_FILE} in {time.time() - t_start}s")
+            f"live_video: saved file {RAW_VIDEO_FILE} in {time.time() - t_start}s")

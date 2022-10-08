@@ -45,7 +45,7 @@ class TimedProgress(object):
         self.renderables = Renderables()
         self.renderables.append([
             title_component,
-            Rectangle(surface, outer_rect_rect, color=None, border_width=5),
+            Rectangle(surface, outer_rect_rect, color=None, border_width=5, border_color=Colors.GREY),
             self.progress_rect,
         ])
 
@@ -66,7 +66,7 @@ class TimedProgress(object):
         width = self.progress_width / self.duration * elapsed
         self.progress_rect.set_width(width)
 
-        self.surface.fill(Colors.OFF_WHITE)
+        # self.surface.fill(Colors.OFF_WHITE)
         self.renderables.render(t)
 
         return True

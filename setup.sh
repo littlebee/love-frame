@@ -8,6 +8,9 @@ set -e
 
 TARGET_DIR="/home/pi/love-frame"
 
+mkdir -p "$TARGET_DIR/data/messages"
+mkdir -p "$TARGET_DIR/data/gallery"
+
 # sudo apt-get update
 # sudo apt-get -y upgrade
 

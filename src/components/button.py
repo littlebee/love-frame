@@ -17,12 +17,12 @@ class ButtonSize(Enum):
 
 BUTTON_SHAPES = {
     ButtonSize.SMALL: {
-        "radius": 35,
-        "font_size": 18,
+        "radius": 56,
+        "font_size": 24,
     },
     ButtonSize.MEDIUM: {
-        "radius": 50,
-        "font_size": 20,
+        "radius": 96,
+        "font_size": 42,
     },
     ButtonSize.LARGE: {
         "radius": 125,
@@ -66,7 +66,11 @@ class Button(object):
         self.surface = self.surface.convert_alpha()
 
         self.textComponent = Text(
-            self.surface, label, BUTTON_SHAPES[size]["font_size"])
+            self.surface,
+            label,
+            BUTTON_SHAPES[size]["font_size"],
+            fg_color=fg_color
+        )
         self.textComponent.center_on_screen()
 
     def render(self, t):
