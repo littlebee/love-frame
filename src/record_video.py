@@ -14,6 +14,7 @@ from components.recorded_video import RecordedVideo
 from components.timed_progress import TimedProgress
 from components.button import Button, ButtonSize
 from components.timer import Timer
+from components.animated_heart import AnimatedHeart
 
 # seconds until recording starts
 LEAD_IN_TIME = 4
@@ -75,7 +76,7 @@ class RecordVideo(object):
                 RecordedVideo(self.surface)
             ],
 
-            [REVIEW_STARTS + 13, 0, lambda: [
+            [REVIEW_STARTS + 8, 0, lambda: [
                 HorzPanel(self.surface, top=0, height=140),
                 Text(self.surface, "Looks Great! They're going to love it.",
                      56, (50, 50), Colors.ALMOST_BLACK),
@@ -97,7 +98,7 @@ class RecordVideo(object):
                       show_minutes=False,
                 ),
             ]],
-            [REVIEW_STARTS + 14, 0, lambda:
+            [REVIEW_STARTS + 9, 0, lambda:
                 Button(self.surface, "Discard",
                        pos=(620, 455),
                        size=ButtonSize.SMALL,
@@ -118,9 +119,10 @@ class RecordVideo(object):
         hasattr(self, "on_closing") and self.on_closing()
 
     def handle_save_click(self):
-        # TODO : add a heart animation and lighting effect
         self.live_video.save()
-        self.close()
+        self.renderables.inject(
+            AnimatedHeart(self.surface, on_close=self.close)
+        )
 
     def handle_discard_click(self):
         # TODO : maybe add a sad trombone sound here

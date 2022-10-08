@@ -13,8 +13,6 @@ from gallery import Gallery
 from menu import Menu, MenuActions
 from record_video import RecordVideo
 
-from components.live_video import LiveVideo
-
 
 pygame.init()
 pygame.display.set_caption("Join the love frame")
@@ -33,11 +31,13 @@ class LoveFrame(object):
 
         self.renderGallery()
 
+
     def handle_menu_closing(self, action):
         if action == MenuActions.RECORD_VIDEO:
             self.renderRecordVideo()
         else:
             self.renderGallery()
+
 
     def renderGallery(self):
         gallery = Gallery(
@@ -46,6 +46,7 @@ class LoveFrame(object):
         )
         self.renderables.append(gallery)
 
+
     def renderMenu(self):
         menu = Menu(
             self.surface,
@@ -53,9 +54,11 @@ class LoveFrame(object):
         )
         self.renderables.append(menu)
 
+
     def renderRecordVideo(self):
         record_video = RecordVideo(self.surface, on_closing=self.renderGallery)
         self.renderables.append(record_video)
+
 
     def render_loop(self):
         try:
