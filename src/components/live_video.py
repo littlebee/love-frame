@@ -5,12 +5,12 @@ import threading
 import time
 import wave
 
+import lib.constants as c
 from lib.image_utils import opencv_to_pyg
 
 
 CAPTURE_FPS = 30
 FRAME_SIZE = (1280, 720)
-RAW_VIDEO_FILE = "data/raw.mp4"
 
 AUDIO_CHUNK = 1024  # Record in chunks of 1024 samples
 AUDIO_SAMPLE_FORMAT = pyaudio.paInt16  # 16 bits per sample
@@ -18,9 +18,10 @@ AUDIO_CHANNELS = 2
 # AUDIO_RATE = 44100  # Record at 44100 samples per second
 # 44100 causes pyaudio to freak if using sudo. R    oot has a lower sample rate?
 AUDIO_RATE = 32000
+
+RAW_VIDEO_FILE = "data/raw.mp4"
 RAW_AUDIO_FILE = "data/raw.wav"
-# directory where saved av files go
-SAVED_VIDEOS_DIR = "data/messages"
+RAW_JPEG_FILE = "data/raw.jpg"
 
 
 class LiveVideo(object):
@@ -85,8 +86,9 @@ class LiveVideo(object):
     #  move raw files to perm storage
     def save(self):
         name = f"{int(time.time() * 1000)}"
-        os.rename(RAW_VIDEO_FILE, f"{SAVED_VIDEOS_DIR}/{name}.mp4")
-        os.rename(RAW_AUDIO_FILE, f"{SAVED_VIDEOS_DIR}/{name}.wav")
+        os.rename(RAW_VIDEO_FILE, f"{c.SAVED_VIDEOS_DIR}/{name}.mp4")
+        os.rename(RAW_AUDIO_FILE, f"{c.SAVED_VIDEOS_DIR}/{name}.wav")
+        os.rename(RAW_JPEG_FILE, f"{c.SAVED_VIDEOS_DIR}/{name}.jpg")
 
 
     def render(self, t):
@@ -190,6 +192,9 @@ class LiveVideo(object):
         )
         for frame in self.recorded_video_frames:
             writer.write(frame)
+
+        # save first frame as JPEG file for static preview
+        cv2.imwrite(RAW_JPEG_FILE , self.recorded_video_frames[0])
 
         writer.release()
         print(

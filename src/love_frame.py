@@ -12,6 +12,7 @@ from lib.pygame_utils import translate_touch_event
 from gallery import Gallery
 from menu import Menu, MenuActions
 from record_video import RecordVideo
+from play_message import PlayMessage
 
 
 pygame.init()
@@ -32,9 +33,20 @@ class LoveFrame(object):
         self.renderGallery()
 
 
-    def handle_menu_closing(self, action):
+    def handle_menu_closing(self, action, data):
         if action == MenuActions.RECORD_VIDEO:
             self.renderRecordVideo()
+        elif action == MenuActions.PLAY_MESSAGE:
+            self.renderPlayMessage(data)
+        else:
+            self.renderGallery()
+
+
+    def handle_play_message_closing(self, action, data):
+        # message player can only direct back to playing the next / prev message
+        # or return to gallery (for now)
+        if action == MenuActions.PLAY_MESSAGE:
+            self.renderPlayMessage(data)
         else:
             self.renderGallery()
 
@@ -58,6 +70,14 @@ class LoveFrame(object):
     def renderRecordVideo(self):
         record_video = RecordVideo(self.surface, on_closing=self.renderGallery)
         self.renderables.append(record_video)
+
+
+    def renderPlayMessage(self, name_key):
+        play_message = PlayMessage(self.surface,
+            name_key,
+            on_closing=self.handle_play_message_closing
+        )
+        self.renderables.append(play_message)
 
 
     def render_loop(self):

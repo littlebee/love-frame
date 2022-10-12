@@ -5,11 +5,8 @@ import threading
 import time
 import wave
 
+import lib.constants as c
 from lib.image_utils import opencv_to_pyg
-
-
-RAW_VIDEO_FILE = "data/raw.mp4"
-RAW_AUDIO_FILE = "data/raw.wav"
 
 pygame.mixer.init()
 
@@ -26,13 +23,13 @@ class RecordedVideo(object):
         the last frame of the video is displayed until `.close()` is called
     """
 
-    def __init__(self, surface, name_key="raw"):
+    def __init__(self, surface, video_file, audio_file, on_playback_complete=None):
         self.surface = surface
-        self.has_closed = False
+        self.video_file = video_file
+        self.audio_file = audio_file
+        self.on_playback_complete = on_playback_complete
 
-        # TODO - change to support saved video
-        self.video_file = RAW_VIDEO_FILE
-        self.audio_file = RAW_AUDIO_FILE
+        self.has_closed = False
 
         self.play_state = PlayStates.STOPPED
         self.last_frame = None
@@ -72,10 +69,9 @@ class RecordedVideo(object):
 
     # needs to be called externally.  This component doesn't self destruct
     def close(self):
-        if not self.has_closed:
+        if hasattr(self, 'has_closed') and not self.has_closed:
             self.has_closed = True
             self.stop_playback();
-
 
 
     def render(self, t):
@@ -109,6 +105,7 @@ class RecordedVideo(object):
 
         self.video_thread = None
         self.play_state = PlayStates.STOPPED
+        callable(self.on_playback_complete) and self.on_playback_complete()
 
 
 

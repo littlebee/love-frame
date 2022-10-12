@@ -7,7 +7,7 @@ from lib.sequenced_renderables import SequencedRenderables
 from components.horz_panel import HorzPanel
 from components.text import Text
 from components.button import Button, ButtonSize
-from components.live_video import LiveVideo
+from components.live_video import LiveVideo, RAW_AUDIO_FILE, RAW_VIDEO_FILE
 from components.exploding_text import ExplodingText
 from components.recording_overlay import RecordingOverlay
 from components.recorded_video import RecordedVideo
@@ -73,7 +73,7 @@ class RecordVideo(object):
             ],
 
             [REVIEW_STARTS, 0, lambda:
-                RecordedVideo(self.surface)
+                RecordedVideo(self.surface, RAW_VIDEO_FILE, RAW_AUDIO_FILE)
             ],
 
             [REVIEW_STARTS + 8, 0, lambda: [
