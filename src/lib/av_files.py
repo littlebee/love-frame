@@ -80,13 +80,13 @@ class AvFiles(object):
 
         # sorted by unviewed, then viewed and by date descending within
         self.av_files.sort(key=lambda x: (x.has_been_viewed, int(x.name) * -1))
-        print(f"av_files: got av_files")
+        # print(f"av_files: got av_files")
 
         self.name_index = {}
         for i in range(len(self.av_files)):
             f = self.av_files[i]
             self.name_index[f.name] = i
-            print(f"av_files: [{i}] = {(f.name, f.has_been_viewed)}")
+            # print(f"av_files: [{i}] = {(f.name, f.has_been_viewed)}")
 
 
     def get_by_name(self, name_key):
@@ -110,19 +110,21 @@ class AvFiles(object):
         self.unviewed_count = min(max(i + 1, 0), num_av_files)
         self.pointer_index = min(max(i, 0), max(num_av_files - 1, 0))
 
-        print(f"av_files: {self.unviewed_count} / {num_av_files} unviewed. pointer_index={self.pointer_index}")
+        # print(f"av_files: {self.unviewed_count} / {num_av_files} unviewed. pointer_index={self.pointer_index}")
 
         return self.pointer_index
 
-    def increment_pointer(self):
-        if self.is_next_file():
+    # "previous" file is the next oldest file (higher index)
+    def point_to_previous(self):
+        if self.is_previous_file():
             self.pointer_index += 1
             return True
         return False
 
 
-    def decrement_pointer(self):
-        if self.is_previous_file():
+    # "next" is the next newest or unviewed file (lower index)
+    def point_to_next(self):
+        if self.is_next_file():
             self.pointer_index -= 1
             return True
         return False
@@ -138,7 +140,7 @@ class AvFiles(object):
 
     def is_previous_file(self):
         num_av_files = len(self.av_files)
-        return num_av_files > 0 and self.pointer_index + 1 < num_av_files
+        return num_av_files > 1 and self.pointer_index + 1 < num_av_files
 
 
     def previous_av_file(self):

@@ -63,7 +63,7 @@ class RecordedVideo(object):
     def stop_playback(self):
         if self.play_state == PlayStates.PLAYING:
             self.play_state = PlayStates.STOPPED
-            mixer.music.stop()
+            pygame.mixer.music.stop()
 
 
 
@@ -92,10 +92,10 @@ class RecordedVideo(object):
         fps = video.get(cv2.CAP_PROP_FPS)
 
         clock = pygame.time.Clock()
-
         while not self.has_closed and self.play_state == PlayStates.PLAYING:
             success, video_image = video.read()
             if not success:
+                callable(self.on_playback_complete) and self.on_playback_complete()
                 break;
             self.last_frame = opencv_to_pyg(video_image)
             clock.tick(fps)
@@ -105,7 +105,7 @@ class RecordedVideo(object):
 
         self.video_thread = None
         self.play_state = PlayStates.STOPPED
-        callable(self.on_playback_complete) and self.on_playback_complete()
+
 
 
 

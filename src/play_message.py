@@ -48,19 +48,21 @@ class PlayMessage(object):
 
         if prev_file:
             self.renderables.append(
-                MessagePreviewButton(self.surface, (40, 450), 
+                MessagePreviewButton(self.surface, (40, 450),
                     button_type=MPButtonTypes.PREV,
-                    av_file=prev_file, 
+                    av_file=prev_file,
                     size=PREVIEW_SIZE,
+                    on_click=self.handle_previous_click
                 )
             )
 
         if next_file:
             self.renderables.append(
-                MessagePreviewButton(self.surface, (800, 450), 
+                MessagePreviewButton(self.surface, (800, 450),
                     button_type=MPButtonTypes.NEXT,
-                    av_file=next_file, 
+                    av_file=next_file,
                     size=PREVIEW_SIZE,
+                    on_click=self.handle_next_click
                 )
             )
 
@@ -68,18 +70,26 @@ class PlayMessage(object):
 
     def close(self, action=MenuActions.GALLERY, data=None):
         self.has_closed = True
+        self.renderables.close()
         self.on_closing(action, data)
 
 
     def handle_pyg_event(self, event):
         event_handled = self.renderables.handle_pyg_event(event)
 
-        if event.type == MOUSEBUTTONDOWN:
+        if not event_handled and event.type == MOUSEBUTTONDOWN:
             self.close(MenuActions.GALLERY)
             return True
 
         return event_handled
 
+    def handle_previous_click(self):
+        av_name_key = self.av_files.previous_av_file().name
+        self.close(MenuActions.PLAY_MESSAGE, av_name_key);
+
+    def handle_next_click(self):
+        av_name_key = self.av_files.next_av_file().name
+        self.close(MenuActions.PLAY_MESSAGE, av_name_key);
 
     def handle_playback_complete(self):
         self.av_file.mark_as_viewed()

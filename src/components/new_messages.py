@@ -29,6 +29,11 @@ class NewMessages(object):
         self.on_preview_click = on_preview_click
 
         self.av_files = AvFiles()
+        self.renderables = None
+        self.update_renderables()
+
+    def update_renderables(self):
+        self.renderables and self.renderables.close()
         self.current_av_file = self.av_files.current_av_file()
         self.prev_av_file = self.av_files.previous_av_file()
         self.next_av_file = self.av_files.next_av_file()
@@ -77,17 +82,12 @@ class NewMessages(object):
 
         if self.current_av_file:
             self.renderables.append([
-                Image(self.surface, (150, 300),
-                    file_path=self.current_av_file.preview_file,
+                MessagePreviewButton(self.surface, (150, 300),
+                    av_file=self.current_av_file,
+                    button_type=MPButtonTypes.PLAY,
                     size=PREVIEW_SIZE,
-                    on_click=self.handle_preview_click
-                ),
-                Rectangle(self.surface, (150, 300, 250, 200),
-                    color = None,
-                    border_width = 4,
-                    border_color = color
-            ),
-
+                    on_click=self.handle_preview_click,
+                )
             ])
         else:
             self.renderables.append([
@@ -95,7 +95,6 @@ class NewMessages(object):
                 Text(self.surface, "Recorded Yet", 32, (195, 380), Colors.LIGHT_GREY),
 
             ])
-
 
 
     def close(self):
@@ -121,9 +120,11 @@ class NewMessages(object):
 
 
     def handle_previous_click(self):
-        print("got prev click")
+        self.av_files.point_to_previous()
+        self.update_renderables()
 
 
     def handle_next_click(self):
-        print("got next click")
+        self.av_files.point_to_next()
+        self.update_renderables()
 

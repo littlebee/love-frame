@@ -8,8 +8,9 @@ from components.live_video import FRAME_SIZE
 from components.rectangle import Rectangle
 from components.image import Image
 
-PREV_ICON = src_file('prev_icon.png')
-NEXT_ICON = src_file('next_icon.png')
+PREV_ICON = src_file('reverse_icon.png')
+NEXT_ICON = src_file('forward_icon.png')
+PLAY_ICON = src_file('play_icon.png')
 
 class MPButtonTypes:
     PLAY = 0
@@ -51,13 +52,7 @@ class MessagePreviewButton(object):
         x, y = pos
         w, h = (crop_rect[2], crop_rect[3]) if crop_rect else self.size
 
-        icon = None,
-        if button_type == MPButtonTypes.PREV:
-            icon = Image(self.surface, (x, y), PREV_ICON, (w, h))
-        elif button_type == MPButtonTypes.NEXT:
-            icon = Image(self.surface, (x, y), NEXT_ICON, (w, h))
-
-        print(f"button_type = {button_type} {icon}")
+        icon = self._get_icon(pos, (w, h))
 
         self.renderables = Renderables()
         self.renderables.append([
@@ -108,3 +103,13 @@ class MessagePreviewButton(object):
                 crop_rect = (0, 0, preview_w / 2, preview_h)
 
         return crop_rect
+
+
+    def _get_icon(self, pos, size):
+        icon_file = PLAY_ICON
+        if self.button_type == MPButtonTypes.PREV:
+            icon_file = PREV_ICON
+        elif self.button_type == MPButtonTypes.NEXT:
+            icon_file = NEXT_ICON
+
+        return Image(self.surface, pos, icon_file, size)

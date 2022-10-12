@@ -23,7 +23,6 @@ class Image(object):
         self.crop_rect = crop_rect
         self.on_click = on_click
 
-
         file_exists = file_path != None and Path(file_path).is_file()
         if file_exists:
             self.image = pygame.image.load(file_path).convert_alpha()
@@ -85,8 +84,8 @@ class Image(object):
         return True;
 
     def handle_pyg_event(self, event):
-        if event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
-            callable(self.on_click) and self.on_click()
+        if callable(self.on_click) and event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+            self.on_click()
             return True
 
         return False
