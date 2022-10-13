@@ -89,8 +89,8 @@ class LoveFrame(object):
                     if event.type == pygame.QUIT or isQuitKey:
                         sys.exit(0)
                         break
-                    translated_event = translate_touch_event(self.surface, event)
-                    self.renderables.handle_pyg_event(translated_event)
+
+                    self.renderables.handle_pyg_event(event)
 
                 self.surface.fill((0, 0, 0))
 

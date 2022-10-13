@@ -57,6 +57,22 @@ class NewMessages(object):
             Text(self.surface, title, 40, (100, 250), color),
         ])
 
+        if self.current_av_file:
+            self.renderables.append([
+                MessagePreviewButton(self.surface, (150, 300),
+                    av_file=self.current_av_file,
+                    button_type=MPButtonTypes.PLAY,
+                    size=PREVIEW_SIZE,
+                    on_click=self.handle_preview_click,
+                )
+            ])
+        else:
+            self.renderables.append([
+                Text(self.surface, "No Messages", 32, (195, 350), Colors.LIGHT_GREY),
+                Text(self.surface, "Recorded Yet", 32, (195, 380), Colors.LIGHT_GREY),
+
+            ])
+
         if self.prev_av_file:
             self.renderables.append(
                 MessagePreviewButton(self.surface, (29, 300),
@@ -80,21 +96,6 @@ class NewMessages(object):
                 )
             )
 
-        if self.current_av_file:
-            self.renderables.append([
-                MessagePreviewButton(self.surface, (150, 300),
-                    av_file=self.current_av_file,
-                    button_type=MPButtonTypes.PLAY,
-                    size=PREVIEW_SIZE,
-                    on_click=self.handle_preview_click,
-                )
-            ])
-        else:
-            self.renderables.append([
-                Text(self.surface, "No Messages", 32, (195, 350), Colors.LIGHT_GREY),
-                Text(self.surface, "Recorded Yet", 32, (195, 380), Colors.LIGHT_GREY),
-
-            ])
 
 
     def close(self):

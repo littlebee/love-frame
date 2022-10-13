@@ -81,7 +81,7 @@ class Button(object):
         self.screen.blit(self.surface, self.pos)
 
     def handle_pyg_event(self, event):
-        if event.type == MOUSEBUTTONDOWN and self.point_intersects(event.pos):
+        if event.type == MOUSEBUTTONDOWN and self.point_intersects(pygame.mouse.get_pos()):
             self.on_click()
             return True  # stop propagation
 

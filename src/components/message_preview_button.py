@@ -1,4 +1,6 @@
 import pygame
+from pygame.locals import MOUSEBUTTONDOWN
+
 
 from lib.renderables import Renderables
 from lib.colors import Colors
@@ -7,6 +9,7 @@ from lib.src_files import src_file
 from components.live_video import FRAME_SIZE
 from components.rectangle import Rectangle
 from components.image import Image
+from components.date_time import DateTime, DEFAULT_DT_FORMAT
 
 PREV_ICON = src_file('reverse_icon.png')
 NEXT_ICON = src_file('forward_icon.png')
@@ -54,6 +57,13 @@ class MessagePreviewButton(object):
 
         icon = self._get_icon(pos, (w, h))
 
+        dt_format, font_size = ("%b. %-d", 24) if half_sized else (DEFAULT_DT_FORMAT, 24)
+        dt = DateTime(self.surface, (x, y), int(av_file.name)/1000,
+            fmt = dt_format,
+            font_size=24
+        )
+        dt.text.center_for_size(w, h, y_offset=h/3)
+
         self.renderables = Renderables()
         self.renderables.append([
             Image(self.surface, pos,
@@ -68,6 +78,7 @@ class MessagePreviewButton(object):
                 border_color = color
             ),
             icon,
+            dt,
         ])
 
 
@@ -78,6 +89,7 @@ class MessagePreviewButton(object):
     def render(self, t):
         if self.has_closed:
             return False
+
         self.renderables.render(t)
         self.parent_surface.blit(self.surface, (0, 0))
         return True

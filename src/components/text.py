@@ -35,13 +35,18 @@ class Text(object):
 
         # create a rectangular object for the
         # text surface object
-        self.textRect = self.text.get_rect()
-        self.textRect.topleft = position
+        self.text_rect = self.text.get_rect()
+        self.text_rect.topleft = position
 
     def center_on_screen(self, x_offset=0, y_offset=0):
         screen_w, screen_h = self.screen.get_size()
         # set the center of the rectangular object.
-        self.textRect.center = (screen_w // 2 + x_offset, screen_h // 2 + y_offset)
+        self.text_rect.center = (screen_w // 2 + x_offset, screen_h // 2 + y_offset)
+
+    def center_for_size(self, w, h, x_offset=0, y_offset=0):
+        # set the center of the rectangular object.
+        tx, ty, tw, th = self.text_rect
+        self.text_rect.center = (tx + w // 2 + x_offset, ty + h // 2 + y_offset)
 
     def close(self):
         self.has_closed = True
@@ -50,6 +55,6 @@ class Text(object):
         if self.has_closed:
             return False
 
-        self.screen.blit(self.text, self.textRect)
+        self.screen.blit(self.text, self.text_rect)
 
         return True
