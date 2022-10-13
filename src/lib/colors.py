@@ -9,3 +9,6 @@ class Colors(object):
     GREY = (127, 127, 127)
     LIGHT_GREY = (192, 192, 192)
     PURPLE = (139, 16, 232)
+
+def normalize_alpha(alpha):
+    return max(min(int(alpha), 255), 0)

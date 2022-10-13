@@ -37,7 +37,7 @@ class AnimatedHeart(object):
         self.red_heart = Image(self.surface, (0, 0), RED_HEART_FILE, init_size)
         self.red_heart.center()
 
-        self.red_heart = Image(self.surface, (0, 0), BLACK_HEART_FILE, init_size)
+        self.black_heart = Image(self.surface, (0, 0), BLACK_HEART_FILE, init_size)
         self.black_heart.center()
 
         self.renderables = SequencedRenderables()
@@ -62,7 +62,8 @@ class AnimatedHeart(object):
 
         duration = t - self.started_at
         if duration < FADE_IN_DURATION:
-            self.backdrop.set_alpha(255 / FADE_IN_DURATION * duration)
+            alpha = 255 / FADE_IN_DURATION * duration
+            self.backdrop.set_alpha(alpha)
         else:
             self.backdrop.set_alpha(255)
 

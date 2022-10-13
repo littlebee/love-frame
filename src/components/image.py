@@ -48,13 +48,13 @@ class Image(object):
         zw, zh = self.size if self.size else self.image.get_size()
 
         self.pos = (sw / 2 - zw / 2, sh / 2 - zh / 2)
-        self.rect.center = (w / 2, h / 2)
+        self.rect.center = (zw / 2, zh / 2)
 
 
     def scale(self, scale_factor):
-        if size:
-            w, h = size
-            size = (w * scale_factor, h * scale_factor)
+        if self.size:
+            w, h = self.size
+            self.size = (w * scale_factor, h * scale_factor)
 
         self.rect.w = self.rect.w * scale_factor
         self.rect.h = self.rect.h * scale_factor

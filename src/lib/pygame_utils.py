@@ -12,8 +12,8 @@ def translate_touch_event(screen, event):
     event_out = event
     if event.type == FINGERDOWN:
         w, h = screen.get_size()
-        pos = (event.x * w, event.y * h)
+        pos = (int(event.x * w), int(event.y * h))
+        # print(f"got touch event {event.x},{event.y} {w},{h} -> {pos}")
         event_out = pygame.event.Event(MOUSEBUTTONDOWN, pos=pos)
-
 
     return event_out

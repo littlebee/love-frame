@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 
-from lib.colors import Colors
+from lib.colors import Colors, normalize_alpha
 
 class Rectangle(object):
     """
@@ -23,25 +23,23 @@ class Rectangle(object):
         border_color=0,
     ):
         self.surface = surface
+        self.set_color(color, alpha)
         self.rect = pygame.Rect(rect)
-        self.color = color and pygame.Color(color) or None
         self.border_width = border_width
         self.border_radius = border_radius
         self.border_color = border_color
 
-        if self.color:
-            self.color.a = alpha
 
         self.has_closed = False
 
     def set_color(self, color, alpha=255):
-        self.color = color and pygame.Color(color) or None
+        self.color = pygame.Color(color) if color else None
         if self.color:
-            self.color.a = alpha
+            self.color.a = normalize_alpha(alpha)
 
     def set_alpha(self, alpha):
         if self.color:
-            self.color.a = int(alpha)
+            self.color.a = normalize_alpha(alpha)
 
     def set_width(self, width):
         self.rect.width = width

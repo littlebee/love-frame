@@ -33,6 +33,7 @@ class RecordVideo(object):
     def __init__(self, screen, on_closing=None):
         self.on_closing = on_closing
         self.has_closed = False
+        self.has_saved = False
 
         self.surface = screen
         self.live_video = LiveVideo(self.surface)
@@ -119,10 +120,14 @@ class RecordVideo(object):
         hasattr(self, "on_closing") and self.on_closing()
 
     def handle_save_click(self):
-        self.live_video.save()
-        self.renderables.inject(
-            AnimatedHeart(self.surface, on_close=self.close)
-        )
+        # it's possible that both the timer could expire just
+        # after the user clicks the button
+        if not self.has_saved:
+            self.has_saved = True
+            self.live_video.save()
+            self.renderables.inject(
+                AnimatedHeart(self.surface, on_close=self.close)
+            )
 
     def handle_discard_click(self):
         # TODO : maybe add a sad trombone sound here
