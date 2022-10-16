@@ -91,14 +91,12 @@ class RecordedVideo(object):
         video = cv2.VideoCapture(self.video_file)
         fps = video.get(cv2.CAP_PROP_FPS)
 
-        clock = pygame.time.Clock()
         while not self.has_closed and self.play_state == PlayStates.PLAYING:
             success, video_image = video.read()
             if not success:
                 callable(self.on_playback_complete) and self.on_playback_complete()
                 break;
             self.last_frame = opencv_to_pyg(video_image)
-            clock.tick(fps)
 
         print("recorded_video: _video_thread stopping")
         video.release()

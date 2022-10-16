@@ -32,3 +32,6 @@ sudo pip3 install rpi-ws281x
 # Make the pigame app automatically start in raspian desktop, full screen
 sudo cp $TARGET_DIR/setup/files/lxe-autostart /etc/xdg/lxsession/LXDE-pi/autostart
 
+# I needed to change the default pulseaudio device to use the HDMI audio out.
+# The Elecrow 7" has a loud amplifier built in.
+pacmd set-default-sink 0
