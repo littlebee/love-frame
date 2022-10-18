@@ -84,6 +84,8 @@ class Image(object):
         return True;
 
     def handle_pyg_event(self, event):
+        if event.type == MOUSEBUTTONDOWN:
+            print(f"image: got mousebuttondown {self.rect} {event.pos}")
         if callable(self.on_click) and event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
             self.on_click()
             return True

@@ -58,8 +58,10 @@ class Menu(object):
         ])
 
     def close(self, action=MenuActions.GALLERY, data=None):
-        self.has_closed = True
-        self.on_closing(action, data)
+        if not self.has_closed:
+            self.has_closed = True
+            self.renderables.close()
+            self.on_closing(action, data)
 
     def handle_record_click(self):
         self.close(MenuActions.RECORD_VIDEO)

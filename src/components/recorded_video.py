@@ -10,6 +10,10 @@ from lib.image_utils import opencv_to_pyg
 
 pygame.mixer.init()
 
+# delay in seconds wait before starting audio
+AUDIO_START_DELAY = 1.2
+
+
 class PlayStates(object):
     STOPPED = 0
     PLAYING = 1
@@ -56,7 +60,7 @@ class RecordedVideo(object):
 
             print(f"recorded_video: starting async audio playback")
             self.video_thread.start()
-            time.sleep(1)
+            time.sleep(AUDIO_START_DELAY)
             mixer.music.play()
 
 
@@ -87,9 +91,9 @@ class RecordedVideo(object):
     def _video_thread(self):
         print("recorded_video: _video_thread starting")
 
-        t_load_start = time.time()
         video = cv2.VideoCapture(self.video_file)
         fps = video.get(cv2.CAP_PROP_FPS)
+        clock = pygame.time.Clock()
 
         while not self.has_closed and self.play_state == PlayStates.PLAYING:
             success, video_image = video.read()
@@ -97,6 +101,7 @@ class RecordedVideo(object):
                 callable(self.on_playback_complete) and self.on_playback_complete()
                 break;
             self.last_frame = opencv_to_pyg(video_image)
+            clock.tick(fps)
 
         print("recorded_video: _video_thread stopping")
         video.release()
