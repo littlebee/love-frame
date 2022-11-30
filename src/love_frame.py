@@ -5,15 +5,16 @@ import pygame
 import sys
 import time
 
+from lib.colors import  Colors
 from lib.constants import RENDER_FPS
 from lib.renderables import Renderables
 from lib.pygame_utils import translate_touch_event
+from lib.leds import initLeds, fill
 
 from gallery import Gallery
 from menu import Menu, MenuActions
 from record_video import RecordVideo
 from play_message import PlayMessage
-
 
 pygame.init()
 pygame.display.set_caption("Join the love frame")
@@ -29,6 +30,9 @@ class LoveFrame(object):
 
         self.clock = pygame.time.Clock()
         self.renderables = Renderables()
+
+        initLeds()
+        fill(Colors.MIDNIGHT_BLUE)
 
         self.renderGallery()
 

@@ -8,6 +8,8 @@ import numpy as np
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 
+from lib.colors import Colors
+from lib.leds import fadeTo
 import lib.image_utils as img
 
 PICTURES_PATH = "./data/gallery"
@@ -68,3 +70,5 @@ class Gallery(object):
         self.image = pyg_image
         self.image_coords = img_coords
         self.last_image_at = time.time()
+
+        fadeTo(self.dominant_color)

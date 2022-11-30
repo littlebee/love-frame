@@ -27,7 +27,7 @@ sudo pip3 install numpy --upgrade
 sudo pip3 install psutil
 
 # needed for the LEDs
-sudo pip3 install rpi-ws281x
+sudo pip3 install adafruit-circuitpython-neopixel
 
 # Make the pigame app automatically start in raspian desktop, full screen
 sudo cp $TARGET_DIR/setup/files/lxe-autostart /etc/xdg/lxsession/LXDE-pi/autostart
