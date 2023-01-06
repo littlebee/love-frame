@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 
+import lib.leds as leds
+from lib.av_files import use_av_files
 from lib.colors import Colors
 from lib.sequenced_renderables import SequencedRenderables
 
@@ -21,7 +23,7 @@ LEAD_IN_TIME = 4
 # default recording length in seconds
 RECORDING_DURATION = 15
 # seconds it takes to save
-SAVING_DURATION = 8
+SAVING_DURATION = 15
 # review starts after the above
 REVIEW_STARTS = LEAD_IN_TIME + RECORDING_DURATION + SAVING_DURATION
 
@@ -34,6 +36,7 @@ class RecordVideo(object):
         self.on_closing = on_closing
         self.has_closed = False
         self.has_saved = False
+        self.av_files = use_av_files()
 
         self.surface = screen
         self.live_video = LiveVideo(self.surface)
@@ -52,6 +55,8 @@ class RecordVideo(object):
                 ),
             ]],
 
+            [0, 0, lambda: leds.bright_white()],
+
             [1, 0, lambda:
               ExplodingText(self.surface, "3", font_size=70, color=Colors.RED, duration=1.15)
             ],
@@ -69,9 +74,10 @@ class RecordVideo(object):
             # Sequenced renderables can also just be functions not returning a renderable
             [LEAD_IN_TIME, 0, self._start_recording],
 
-            [LEAD_IN_TIME+RECORDING_DURATION, SAVING_DURATION, lambda :
-                TimedProgress(self.surface, duration=SAVING_DURATION)
-            ],
+            [LEAD_IN_TIME+RECORDING_DURATION, SAVING_DURATION, lambda : [
+                TimedProgress(self.surface, duration=SAVING_DURATION),
+                leds.fade_to(Colors.MIDNIGHT_BLUE)
+            ]],
 
             [REVIEW_STARTS, 0, lambda:
                 RecordedVideo(self.surface, RAW_VIDEO_FILE, RAW_AUDIO_FILE)
@@ -128,6 +134,7 @@ class RecordVideo(object):
             self.renderables.inject(
                 AnimatedHeart(self.surface, on_close=self.close)
             )
+            self.av_files.load_data()
 
     def handle_discard_click(self):
         # TODO : maybe add a sad trombone sound here

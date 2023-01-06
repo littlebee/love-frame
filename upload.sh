@@ -39,5 +39,6 @@ rsync --progress --partial -avz \
 --exclude=.git \
 --exclude=results* \
 --exclude=camera_test_output* \
+--exclude=3d-print/ \
 . $TARGET_HOST:$TARGET_DIR
 

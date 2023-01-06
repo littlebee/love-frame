@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 import time
 
-from lib.av_files import AvFiles
+from lib.av_files import use_av_files
 from lib.colors import Colors
 from lib.renderables import Renderables
 
@@ -30,7 +30,7 @@ class PlayMessage(object):
         self.has_closed = False
         self.started_at = time.time()
 
-        self.av_files = AvFiles()
+        self.av_files = use_av_files()
         self.av_files.point_to_name(name_key)
 
         self.av_file = av_file = self.av_files.current_av_file()
@@ -92,7 +92,7 @@ class PlayMessage(object):
         self.close(MenuActions.PLAY_MESSAGE, av_name_key);
 
     def handle_playback_complete(self):
-        self.av_file.mark_as_viewed()
+        self.av_files.mark_as_viewed(self.av_file.name)
 
 
     def render(self, t):

@@ -2,7 +2,7 @@ import pygame
 
 from lib.renderables import Renderables
 from lib.colors import Colors
-from lib.av_files import AvFiles
+from lib.av_files import use_av_files
 
 from components.live_video import FRAME_SIZE
 from components.image import Image
@@ -28,7 +28,7 @@ class NewMessages(object):
         self.surface = surface
         self.on_preview_click = on_preview_click
 
-        self.av_files = AvFiles()
+        self.av_files = use_av_files()
         self.renderables = None
         self.update_renderables()
 

@@ -2,6 +2,8 @@ import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 import time
 
+import lib.leds as leds
+from lib.av_files import use_av_files
 from lib.colors import Colors
 from lib.renderables import Renderables
 
@@ -31,6 +33,9 @@ class Menu(object):
         self.new_messages = NewMessages(self.surface,
             on_preview_click=self.handle_preview_click
         )
+
+        led_color = Colors.PURPLE if use_av_files().has_unviewed() else Colors.SUBDUED_GREEN
+        leds.fade_to(led_color)
 
         self.renderables = Renderables()
         self.renderables.append([

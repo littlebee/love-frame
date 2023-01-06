@@ -8,12 +8,14 @@ import numpy as np
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 
+from lib.av_files import use_av_files
 from lib.colors import Colors
-from lib.leds import fadeTo
+import lib.leds as leds
 import lib.image_utils as img
 
 PICTURES_PATH = "./data/gallery"
 DISPLAY_SECONDS = 7
+NOTIFY_SECONDS = 10
 
 
 class Gallery(object):
@@ -26,6 +28,9 @@ class Gallery(object):
         self.image_coords = (0, 0)
         self.dominant_color = [0, 0, 0]
         self.last_image_at = 0
+
+        self.av_files = use_av_files()
+        self.last_new_message_notification = 0
 
         self.surface = screen
 
@@ -46,6 +51,10 @@ class Gallery(object):
 
         if t - self.last_image_at > DISPLAY_SECONDS:
             self._get_next_image()
+
+        if t - self.last_new_message_notification > NOTIFY_SECONDS and self.av_files.has_unviewed():
+            self.last_new_message_notification = t
+            leds.new_message()
 
         if self.image != None:
             self.surface.fill(self.dominant_color)
@@ -71,4 +80,4 @@ class Gallery(object):
         self.image_coords = img_coords
         self.last_image_at = time.time()
 
-        fadeTo(self.dominant_color)
+        leds.fade_to(self.dominant_color)

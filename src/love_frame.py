@@ -5,11 +5,12 @@ import pygame
 import sys
 import time
 
+import lib.leds as leds
 from lib.colors import  Colors
 from lib.constants import RENDER_FPS
 from lib.renderables import Renderables
 from lib.pygame_utils import translate_touch_event
-from lib.leds import initLeds, fill
+from lib.av_files import init_av_files
 
 from gallery import Gallery
 from menu import Menu, MenuActions
@@ -31,8 +32,9 @@ class LoveFrame(object):
         self.clock = pygame.time.Clock()
         self.renderables = Renderables()
 
-        initLeds()
-        fill(Colors.MIDNIGHT_BLUE)
+        init_av_files()
+        leds.init_leds()
+        leds.fill(Colors.MIDNIGHT_BLUE)
 
         self.renderGallery()
 
@@ -114,6 +116,7 @@ class LoveFrame(object):
             self.renderables.close()
             pygame.quit()
             cv2.destroyAllWindows()
+            leds.quit()
 
 
 if __name__ == "__main__":

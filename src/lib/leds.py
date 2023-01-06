@@ -14,7 +14,10 @@ BPM_EXCITED = 110
 
 DARKEST_ADJ_COLOR =  (0, 6, 32)
 
-LED_COUNT = 60      # Number of LED pixels.
+NEW_MESSAGE_COLOR = (16, 232, 139, 0)
+
+
+LED_COUNT = 37      # Number of LED pixels.
 LED_PIN = 12      # GPIO pin connected to the pixels (18 uses PWM!).
 LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA = 10      # DMA channel to use for generating signal (try 10)
@@ -33,10 +36,17 @@ strip = None
 # this is a FIFO queue of commands to run
 queue = []
 current_color = None
+last_requested_color = None
+thread_should_stop = False
 
-def initLeds():
+def init_leds():
     thread = threading.Thread(target=_thread)
     thread.start()
+
+
+def quit():
+    global thread_should_stop
+    thread_should_stop = True
 
 
 def normalize(cc):
@@ -61,14 +71,23 @@ def adjustColor(rgb):
 
 def fill(rgb, white=0, adjust=True):
     global queue
+    global last_requested_color
     (r, g, b) = adjustColor(rgb) if adjust else rgb
+    last_requested_color = (r, g, b)
     queue.append([_fill, (r, g, b, white)])
 
 
-def fadeTo(rgb, white=0, adjust=True, steps=10, duration=.1):
+def fade_to(rgb, white=0, adjust=True, steps=10, duration=.1):
     global queue
+    global last_requested_color
     (r, g, b) = adjustColor(rgb) if adjust else rgb
-    queue.append([_fadeTo, [(r, g, b, white), steps, duration]])
+    last_requested_color = (r, g, b)
+    queue.append([_fade_to, [(r, g, b, white), steps, duration]])
+
+
+def new_message():
+    global queue
+    queue.append([_new_message, []])
 
 
 def bright_white():
@@ -101,7 +120,7 @@ def _thread():
 
     _init_strip()
 
-    while True:
+    while not thread_should_stop:
         while len(queue) > 0:
             [fn, data] = queue.pop(0)
             fn(data)
@@ -124,7 +143,7 @@ def _fill(rgbw):
 
 # fade from current color to rgb
 
-def _fadeTo(args):
+def _fade_to(args):
     global current_color
     global strip
 
@@ -161,6 +180,23 @@ def _fadeTo(args):
     current_color = rgbw
 
 
+def _new_message(_args):
+    global current_color
+
+    band_width = 24
+    laps = 1
+
+    for r in range(laps):
+        for i in range(LED_COUNT + 1):
+            time.sleep(.01)
+            for j in range (band_width):
+                if i + j < LED_COUNT:
+                    strip.setPixelColor(i+j, Color(*NEW_MESSAGE_COLOR))
+            strip.show()
+            (r, g, b) = last_requested_color
+            strip.setPixelColor(i, Color(g, r, b))
+
+
 if __name__ == '__main__':
 
     _init_strip()
@@ -182,3 +218,5 @@ if __name__ == '__main__':
         print('extra white fill')
         _fill((255, 255, 255, 255))
         time.sleep(sSleep)
+
+

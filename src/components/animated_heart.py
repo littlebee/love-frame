@@ -4,6 +4,8 @@ import time
 from lib.colors import Colors
 from lib.sequenced_renderables import SequencedRenderables
 from lib.src_files import src_file
+import lib.leds as leds
+
 
 from components.rectangle import Rectangle
 from components.image import Image
@@ -23,6 +25,7 @@ class AnimatedHeart(object):
 
         self.started_at = time.time()
         self.has_closed = False
+        self.is_first_render = True
 
         self.w, self.h = parent_surface.get_size()
         self.surface = pygame.Surface((self.w, self.h), pygame.SRCALPHA, 32)
@@ -60,6 +63,10 @@ class AnimatedHeart(object):
         if self.has_closed:
             return False
 
+        if self.is_first_render:
+            self.is_first_render = False
+            self.led_animation()
+
         duration = t - self.started_at
         if duration < FADE_IN_DURATION:
             alpha = 255 / FADE_IN_DURATION * duration
@@ -83,3 +90,12 @@ class AnimatedHeart(object):
         self.renderables.render(t)
         self.parent_surface.blit(self.surface, (0, 0))
         return True
+
+    def led_animation(self):
+        # these are async calls
+        leds.fill(Colors.ALMOST_BLACK)
+        leds.fade_to(Colors.RED, steps=10, duration=.25)
+        leds.fade_to(Colors.ALMOST_BLACK, steps=20, duration=1)
+        leds.fade_to(Colors.RED, steps=10, duration=.25)
+        leds.fade_to(Colors.ALMOST_BLACK, steps=20, duration=1)
+

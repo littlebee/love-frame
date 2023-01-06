@@ -4,6 +4,18 @@ import time
 import lib.constants as c
 
 
+av_files = None
+
+def init_av_files():
+    global av_files
+    av_files = AvFiles()
+    return av_files
+
+
+def use_av_files():
+    global av_files
+    return av_files
+
 
 class AvFile(object):
 
@@ -23,8 +35,10 @@ class AvFile(object):
         self.has_been_viewed = False
 
 
-
-    def mark_as_viewed(self):
+    # DONT CALL DIRECTLY.  call via av_files.mark_as_viewed so that counts are
+    # maintained
+    def _mark_as_viewed(self):
+        self.has_been_viewed = True
         self.log_file = f"{c.SAVED_VIDEOS_DIR}/{self.name}.log"
         fp = open(self.log_file, 'a')
         fp.write(f"{int(time.time() * 1000)}\n")
@@ -32,6 +46,8 @@ class AvFile(object):
 
 
 
+# should not need more than one instance of this class for all of application
+# use the global exported at the top of the file.
 class AvFiles(object):
 
     def __init__(self):
@@ -43,6 +59,8 @@ class AvFiles(object):
 
         self.load_data()
 
+    def has_unviewed(self):
+        return self.unviewed_count > 0
 
     def load_data(self):
         self.load_file_data()
@@ -51,6 +69,7 @@ class AvFiles(object):
 
     def load_file_data(self):
         av_files = {}
+        viewed_count = 0
         for filename in os.listdir(c.SAVED_VIDEOS_DIR):
             i_dot = filename.rfind(".")
             name_key = filename[0:i_dot]
@@ -75,8 +94,11 @@ class AvFiles(object):
             elif ext == '.log':
                 av_file.log_file = full_path
                 av_file.has_been_viewed = True
+                viewed_count += 1
+
 
         self.av_files = list(av_files.values())
+        self.unviewed_count = len(self.av_files) - viewed_count
 
         # sorted by unviewed, then viewed and by date descending within
         self.av_files.sort(key=lambda x: (x.has_been_viewed, int(x.name) * -1))
@@ -107,7 +129,6 @@ class AvFiles(object):
                 break
             i += 1
 
-        self.unviewed_count = min(max(i + 1, 0), num_av_files)
         self.pointer_index = min(max(i, 0), max(num_av_files - 1, 0))
 
         # print(f"av_files: {self.unviewed_count} / {num_av_files} unviewed. pointer_index={self.pointer_index}")
@@ -163,7 +184,9 @@ class AvFiles(object):
 
 
     def mark_as_viewed(self, name_key):
-        self.av_files[name_key].mark_as_viewed()
+        self.unviewed_count = max(0, self.unviewed_count - 1)
+        index = self.name_index[name_key]
+        self.av_files[index]._mark_as_viewed()
 
 
 
