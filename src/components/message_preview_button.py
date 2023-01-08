@@ -101,7 +101,7 @@ class MessagePreviewButton(object):
         transposed_event = event
         if event.type == MOUSEBUTTONDOWN:
             newpos = (event.pos[0] - self.pos[0], event.pos[1] - self.pos[1])
-            print(f"mpb: got mousebuttondown {self.pos} : {event.pos} -> {newpos}")
+            # print(f"mpb: got mousebuttondown {self.pos} : {event.pos} -> {newpos}")
             transposed_event = pygame.event.Event(MOUSEBUTTONDOWN, pos=newpos)
 
         return self.renderables.handle_pyg_event(transposed_event)
