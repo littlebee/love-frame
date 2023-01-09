@@ -1,10 +1,13 @@
 
+### Don't do the below or you can't reconfigure the network via touch
 # no taskbar
 # @lxpanel --profile LXDE-pi
 
 @pcmanfm --desktop --profile LXDE-pi
 
+# not show the spash, instead shows the console output during boot :/
 # @xscreensaver -no-splash
+
 @xset s off
 @xset -dpms
 @xset s noblank
